@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+  integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+  crossorigin=""/>
+
+  <script src="database.json"></script>
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+ integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+ crossorigin=""></script>
+  <style>
+    #map { height: 480px; border: 1px solid black; }
+      table {
+          margin-right: auto;
+          margin-left: auto;
+      }
+
+      th, td {
+          font-family: 'Roboto Condensed', sans-serif;
+          padding: 4px 4px;
+      }
+
+      #submit-row td {
+          text-align: center;
+      }
+
+      #submit-row input {
+          font-family: 'Roboto Condensed', sans-serif;
+          background: #FCFCFC;
+      }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>User Form</title>
+  </head>
+
+  <body>
+    <form id="user-form">
+      <table>
+      <tr>
+        <th colspan="2">Please fill out this form:</th>
+      </tr>
+      <tr>
+        <td><label for="id">ID:</label></td>
+        <td><input type="text" id="id" name="id" placeholder="jd1234"><br></td>
+      </tr>
+      <tr>
+        <td><label for="name">First Name:</label></td>
+        <td><input type="text" id="name" name="name" placeholder="John"><br></td>
+      </tr>
+      <tr>
+        <td><label for="surname">Last Name:</label></td>
+        <td><input type="text" id="surname" name="surname" placeholder="Doe"><br></td>
+      </tr>
+      <tr>
+        <td><label for="birthdate">Date of Birth:</label></td>
+        <td><input type="date" id="birthdate" name="birthdate"><br></td>
+      </tr>
+      <tr>
+        <td>>Day:</td>
+        <td>
+            <select id = 'day'>
+                <option value="today">Today</option>
+                <option value="tomorrow">Tomoroow</option>
+            </select>
+        </td>
+      </tr>
+    <tr>
+        <td>>Pickup Time:</td>
+        <td>
+            <select id = 'time'>
+                <option value="08:30">08:30</option>
+                <option value="09:15">09:15</option>
+                <option value="10:00">10:00</option>
+                <option value="10:45">10:45</option>
+                <option value="11:30">11:30</option>
+                <option value="12:15">12:15</option>
+                <option value="01:00">01:00</option>
+                <option value="01:45">01:45</option>
+                <option value="02:30">02:30</option>
+                <option value="03:15">03:15</option>
+                <option value="04:00">04:00</option>
+            </select>
+        </td>
+      </tr>
+  </table>
+  <table>
+    <tr>
+        <th colspan="5"><label for="riders">Additional Riders (optional):</label></th>
+    </tr>
+    <tr>
+        <td style="text-align: center;">ID:</td>
+        <td style="text-align: center;">First Name:</td>
+        <td style="text-align: center;">Last Name:</td>
+        <td style="text-align: center;">Date of Birth:</td>
+    </tr>
+    <tr>
+        <td style="text-align: center;"><input type="text" id="riders-id" name="riders-id" placeholder="jd1234"></td>
+        <td style="text-align: center;"><input type="text" id="riders-name" name="riders-name" placeholder="John"></td>
+        <td style="text-align: center;"><input type="text" id="riders-surname" name="riders-surname" placeholder="Doe"></td>
+        <td style="text-align: center;"><input type="date" id="riders-birthdate" name="riders-birthdate" ></td>
+        <td style="text-align: center;"><input type="button" id="add-button" value="Add"></td>
+    </tr>
+    <tr>
+        <td colspan="5"><ul id="riders-list"></ul></td>
+    </tr>
+    <tr id ='submit-row'>
+      <td colspan="4"><input type="button" id="submit"  onclick=submitData(lst) value="Submit"></td>
+    </tr>
+
+    
+</table>
+    </form>
+    <div id="map"></div>
+    <script type = 'text/javascript'>
+      var lst = [];
+      
+      document.getElementById('add-button').onclick = function() {
+                var ul = document.getElementById('riders-list');
+                var li = document.createElement('li');
+                var id = document.getElementById('riders-id')
+                var name = document.getElementById('riders-name')
+                var surname = document.getElementById('riders-surname')
+                var birthdate = document.getElementById('riders-birthdate')
+                
+                if (ul.getElementsByTagName('li').length < 2) {
+                    if (name.value != '' && surname.value != '' && birthdate.value != '') {
+                        li.innerHTML = name.value + ' ' + surname.value + ' (' + birthdate.value + ') - ' + id.value
+                        if (id == ''){
+                          var val = Math.floor(1000 + Math.random() * 9000);
+                          var id = name[0].toLowerCase() + surname[0].toLowerCase() + val;
+                          var waiver = false
+                          }
+                          else{
+                            var waiver = true
+                        }
+                        temp = [id.value,name.value,surname.value,birthdate.value ,waiver]
+                        lst.push(temp)
+                        id.value = ''
+                        name.value = ''
+                        surname.value = ''
+                        birthdate.value = ''
+                        ul.appendChild(li)
+                    }
+                } else {
+                    alert('Maximum number of riders reached!')
+                }
+            }
+      
+      function submitData(lst){
+        var id = $('#id').val();
+        var name = $('#name').val();
+        var surname = $('#surname').val();
+        var birthdate = $('#birthdate').val();
+        var day = $('#day').val();
+        var time = $('#time').val();
+        var loc = sendMarker(marker);
+        
+        
+
+        const today = new Date();
+        const tomorrow = new Date(today);
+        
+        tomorrow .setDate(tomorrow.getDate()+1);
+
+        const config = {
+          year: 'numeric',
+          month: 'short',
+          day : '2-digit'
+        };
+
+        const DTF = new Intl.DateTimeFormat('default',config);
+        
+        if (day == 'today'){
+        var day = DTF.format(today);
+        }
+        else if (day == 'tomorrow'){
+        var day = DTF.format(tomorrow);
+        }
+
+        var temp_date =  day + '   ' + time 
+        var date = temp_date.split()
+        //console.log(date)
+        let location = new URLSearchParams(loc);
+        
+        if (id == '')
+        {
+        var val = Math.floor(1000 + Math.random() * 9000);
+        var id = name[0].toLowerCase() + surname[0].toLowerCase() + val;
+        }
+        else{
+          $.getJSON("database.json", function(json) {
+          //console.log(json.riders[0].id)
+          var id_in = false
+          var rider_in = false
+          for (let i = 0; i < json.riders.length; i++) {
+             //console.log(json.riders[i])
+             rider = json.riders[i]
+            // console.log('|||||')
+            // console.log(id)
+            if (rider.id == id){
+              id_in = true
+              console.log("||||||||||||||")
+              if (rider.name == name & rider.surname == surname & rider.birthdate == birthdate){
+                console.log("||||||||||||||")
+                rider_in = true
+                break;
+              }
+            }
+          }
+          if (rider_in == false & id_in == true){
+            alert("ID does not match rider's information") 
+          }
+        })};
+
+        var picked = false
+        toString(id)
+        birthdate = birthdate.replaceAll('/', '-')
+        //console.log(lst)
+        url = 'http://127.0.0.1:8000/cgi-bin/getData.py?' + 'function=' + 'add' + '&id=' + id + '&name='+name + '&surname='+surname + '&birthdate='+birthdate  + '&location='+ location + '&date='+ date + "&picked=" + picked + '&waiver=' + 'false'
+        for (var i = 0; i < lst.length; i++){
+          url = 'http://127.0.0.1:8000/cgi-bin/getData.py?' + 'function=' + 'add' + '&id=' + lst[i][0] + '&name='+lst[i][1] + '&surname='+lst[i][2] + '&birthdate='+lst[i][3] + '&location='+ location + '&date='+date + "&picked=" + picked + '&waiver=' + lst[i][4]
+
+        }
+		      fetch(url)
+        .then(data => {
+          return data.json();
+        }).then(json => { 
+        console.log(json['status']);
+      });
+
+      console.log("hi")
+
+      }
+
+
+    var countMarkers = false;
+    var marker = null;
+    var popup = L.popup();
+
+    var map = L.map('map').setView([30.351815, -97.700188], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+        }).addTo(map);
+    
+    
+
+    var goergianAcres = L.polygon([[30.339410441869536, -97.70027080476106],
+        [30.35833211360448, -97.68806220171041],
+        [30.363198989985634, -97.69709275248165],
+        [30.348226383043677, -97.71320677205651]
+            ]).addTo(map);
+
+
+
+    function onMapClick(e) {
+            if (countMarkers == false){
+                var checkMark =  L.marker(e.latlng)
+                if(!checkArea(checkMark,goergianAcres)) return;
+                marker = L.marker(e.latlng);
+                popup.setLatLng(e.latlng).setContent("Your pick up location ").openOn(map);
+                marker.addTo(map);
+                countMarkers = true;
+                
+            }
+            else{
+           
+            var checkMark =  L.marker(e.latlng)
+            
+            if(!checkArea(checkMark,goergianAcres)) return;
+            marker.setLatLng(e.latlng);
+            popup.setLatLng(e.latlng).setContent("Your pick up location ").openOn(map);
+                }
+            }
+        map.on('click', onMapClick);
+
+    function checkArea(marker, poly){
+        
+        var inside = false;
+         var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+     for (var ii=0;ii<poly.getLatLngs().length;ii++){
+        var polyPoints = poly.getLatLngs()[ii];
+        for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+        var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+        var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+                } 
+            }
+         if (!inside) writeMessage(marker)
+            return inside
+        }
+    function writeMessage(mark)  {
+        popup.setLatLng(mark.getLatLng()).setContent("Outside the scope of pickup ").openOn(map);
+        }
+
+    function sendMarker(marker){
+        if (marker != null && countMarkers == true)
+            return marker;
+        else{
+          alert("Please choose a location")
+        }
+         }
+
+</script>
+  </body>
+</html>

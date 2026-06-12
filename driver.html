@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="database.json"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+        <style>
+            * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+
+        .orange {
+            
+            background-color: rgb(253, 253, 253);
+            padding: 8px;
+        }
+        
+        nav {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: rgb(255, 115, 0);
+            font-size: 20;
+            color: white;
+            font-family: sans-serif;
+        }
+        
+        nav ul {
+            flex: 1;
+            text-align: right;
+            padding-right: 30px;
+        }
+
+        nav ul li {
+            display: inline-block;
+            list-style: none;
+            margin: 10px 20px;
+        
+        }
+        
+        nav ul li a {
+            color: rgb(255, 255, 255);
+            text-decoration: none;
+            position: relative;
+        }
+
+        nav ul li a::after {
+            content: '';
+            width:0;
+            height: 3px;
+            position: absolute;
+            bottom: -5px;
+            left:50%;
+            transform: translateX(-50%);
+            background: rgb(255, 255, 255);
+            transition: width 0.3s;
+        }
+
+        nav ul li a:hover::after {
+            width:50%;
+        
+        }
+
+        .form-signin {
+          width: 100%;
+          max-width: 330px;
+          padding: 15px;
+          margin-right: auto;
+          margin-left: auto;
+        }
+
+        .form-signin .checkbox {
+          font-weight: 400;
+        }
+
+        .form-signin .form-control {
+          position: relative;
+          box-sizing: border-box;
+          height: auto;
+          padding: 10px;
+          font-size: 16px;
+          
+        }
+
+        .form-signin .form-control:focus {
+          z-index: 2;
+        }
+
+        .form-signin input[type="name"] {
+          margin-bottom: -1px;
+          border-bottom-right-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+        
+        
+        
+        .form-signin input[type="surname"] {
+          margin-bottom: 10px;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        }
+
+                    .bd-placeholder-img {
+                      font-size: 1.125rem;
+                      text-anchor: middle;
+                    }
+              
+                    @media (min-width: 768px) {
+                      .bd-placeholder-img-lg {
+                        font-size: 3.5rem;
+                      }
+                    }
+              
+              table {
+                  margin-left: auto;
+                  margin-right: auto;
+                  height:200px;
+              }
+              
+        </style>
+                  
+
+    </head>
+    
+    <body>
+    
+        
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="home.html">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav mr-auto">
+               <li class="nav-item">
+                  <a class="nav-link" style="color: white;"  href="home.html">Home</a>
+                </li>
+                
+            </div>
+          </nav>
+          <div class="orange"><h1> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/University_of_Texas_at_Austin_logo.svg/1280px-University_of_Texas_at_Austin_logo.svg.png" alt="" width="200"></h1></div>
+        
+              <nav>
+                  
+                
+              </nav>
+            </div>
+            <centre>
+                <table >
+                  <form class="form-signin" >
+                      <tr>
+                          <td>
+                              <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                          </td>
+                          
+                      
+                      </tr>
+                      <tr>
+                          <td>
+                              <label for="name" class="sr-only"> Name</label>
+                          </td>
+                          <td>
+                              <input type="name" id="name" class="form-control" placeholder="John" required autofocus>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              <label for="surname" class="sr-only">Surname</label>
+                          </td>
+                          <td>
+                              <input type="surname" id="surname" class="form-control" placeholder="Doe" required>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              
+                          </td>
+                          <td>
+                            <button class="btn btn-lg btn-primary" onclick = check() type="submit">Sign in </button>
+                             
+                          </td>
+                      </tr>
+                      
+                      
+                      </form>
+      
+                </table>
+              </centre>
+            <script>
+              function check(){
+                var name = $('#name').val().toLowerCase();
+                var surname = $('#surname').val().toLowerCase();
+
+                    fetch("database.json")
+                    .then(response => {
+                    return response.json();
+                    })
+                    .then(jsondata => console.log(jsondata))
+                
+
+                const myRequest = new Request('database.json');
+                fetch(myRequest)
+                .then(response => response.json())
+                .then(data => {
+                  temp = false
+                    for (const driver of data.drivers) {
+                      console.log(driver)
+                        if (driver.name == name & driver.surname == surname){
+                          window.location.href = "http://127.0.0.1:5500/driverPage1.html";
+                          temp = true
+                        }
+                      }
+                    if (temp == false){
+                    alert('Name or Surname does not match')}
+                })
+                .catch(console.error);
+              }
+
+            </script>
+          
+        
+    </body>  
+    
+</html>

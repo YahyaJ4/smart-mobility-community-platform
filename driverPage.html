@@ -1,0 +1,205 @@
+<html>
+    <head>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+            integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+            crossorigin=""/>
+        
+            <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+           integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+           crossorigin=""></script>
+        
+           <style>
+                        #map {
+                        border: 1px solid black;
+                        height: 500px;
+                        width: 1000px;
+                    }
+                    
+                  
+
+            </style>
+    </head>
+    <!-- <div class="w3-container">
+        <p>The w3-container class is an important w3.CSS class.</p>
+    </div> -->
+        <body>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="database.json"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+    th{ 
+        color:rgb(255, 255, 255);
+            }
+</style>
+
+        <td>
+            <div id="map"></div>
+            </td>
+            
+            <table class="table table-striped">
+                <tr  class="bg-info">
+                    <th data-column="id">ID </th>
+                    <th data-column="name">Name </th>
+                    <th data-column="surname">Surname </th>
+                    <th data-column="birthdate">BirthDate </th>
+                    <th data-column="trip">Trip </th>
+                    <th data-column="location">Locaiton </th>
+                    <th data-column="waiver">Waiver </th>
+                </tr>
+                <tbody id="myTable">
+                </tbody>
+            </table>
+            
+
+
+<script>
+
+var Users = []
+
+var formData = JSON.stringify($("#Users").serializeArray());
+
+function fetching(){
+fetch("database.json")
+.then(response => {
+   return response.json();
+})
+.then(jsondata => console.log(jsondata))}
+
+const myList = document.querySelector('ul');
+const myRequest = new Request('database.json');
+fetch(myRequest)
+  .then(response => response.json())
+  .then(data => {
+    for (const Rider of data.riders) {
+	  Users.push({"id":Rider.id, "name":Rider.name, "surname":Rider.surname, "birthdate": Rider.birthdate, "trip":Rider.trip, "location":Rider.location,"waiver":Rider.waiver})
+		}
+	JSON.stringify(Users)
+	buildTable(Users)
+  })
+  .catch(console.error);
+
+console.log(Users)
+
+function buildTable(data){
+	var table = document.getElementById('myTable')
+	table.innerHTML = ''
+	for (var i = 0; i < data.length; i++){
+		var row = `<tr>
+						<td>${data[i].id}</td>
+						<td>${data[i].name}</td>
+						<td>${data[i].surname}</td>
+						<td>${data[i].birthdate}</td>
+						<td>${data[i].trip}</td>
+						<td>${data[i].location}</td>
+						<td>${data[i].waiver}</td>
+					</tr>`
+		table.innerHTML += row
+		}
+	}
+//------------- map------------------------
+
+        var countMarkers = false;
+        var tripsLst = {};
+        var popup = L.popup();
+        
+        var map = L.map('map').setView([30.351815, -97.700188], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+            }).addTo(map);
+        
+        var goergianAcres = L.polygon([[30.339410441869536, -97.70027080476106],
+            [30.35833211360448, -97.68806220171041],
+            [30.363198989985634, -97.69709275248165],
+            [30.348226383043677, -97.71320677205651]
+                ]).addTo(map);
+        
+        function lstRiders(trvlNum,rider){
+            if (rider != null && trvlNum != 0 && trvlNum != null)
+                tripsLst[trvlNum] = rider;
+            }
+
+        function showlocations(){
+            var keys= Object.keys(tripsLst);
+            for(var i = 0; i < keys.length; i++){
+              var marker =  tripsLst[keys[i]]["Location"];
+              marker.addTo(map).on('click', function(e) {
+
+                var latDes = marker.getLatLng().lat;
+                var longDes = marker.getLatLng().lng;
+                
+                navigator.geolocation.getCurrentPosition(function(location) {    
+                    var latlng = new L.LatLng(location.coords.latitude, location.coords.longitude);
+                    var curLat = latlng.lat;
+                    var curLng = latlng.lng;
+                    var url = "https://www.google.com/maps/dir/?api=1&";
+                    var origin = "origin=" +  curLat + "," + curLng;
+                    var destination = "&destination=" + latDes + "," + longDes;
+                    var newUrl = new URL(url + origin + destination);
+                    
+                var win = window.open(newUrl, '_blank');
+                win.focus();
+            
+                            });
+                        });
+
+                marker.bindPopup("Popup content");
+                marker.on('mouseover', function (e) {
+                this.openPopup();
+                        });
+                marker.on('mouseout', function (e) {
+                    this.closePopup();
+                        });  
+                    }; 
+            }
+            
+        function sendMarker(marker){
+            if (makrer != null && countMarkers == true)
+                return marker;
+             }
+
+        function endRide(tripNum){
+            tripsLst[tripNum]["Location"].remove();
+            delete tripsLst[tripNum];
+        }
+        function pickedUp(tripNum){
+            tripsLst[tripNum]["Location"].remove();
+        }
+
+        function onLocationFound(e) {
+            var radius = e.accuracy;
+
+        L.marker(e.latlng).addTo(map).bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.circle(e.latlng, radius).addTo(map);
+            }
+
+
+
+            function onLocationError(e) {
+                alert('Location not found, try to  turn on "finding location".');
+                    }               
+
+
+  
+
+
+        var marker2 = L.marker([30.34, -97.7]);
+        var rider2 = {"Location": marker2};
+        lstRiders(2, rider2)
+        var marker = L.marker([30.35, -97.7]);
+        var rider = {"Location": marker};
+
+        lstRiders(1, rider)
+        showlocations()
+
+        map.on('locationerror', onLocationError);
+        map.on('locationfound', onLocationFound);
+        map.locate({setView: true, watch: false, maxZoom: 13});
+
+            </script>
+        </body>
+</html>

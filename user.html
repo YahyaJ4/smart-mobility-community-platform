@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+
+  <style>
+      table {
+          margin-right: auto;
+          margin-left: auto;
+      }
+
+      th, td {
+          font-family: 'Roboto Condensed', sans-serif;
+          padding: 4px 4px;
+      }
+
+      #submit-row td {
+          text-align: center;
+      }
+
+      #submit-row input {
+          font-family: 'Roboto Condensed', sans-serif;
+          background: #FCFCFC;
+      }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>User Form</title>
+    </head>
+
+    <body>
+        <form id="user-form">
+            <table>
+                <tr>
+                    <th colspan="2">Please fill out this form:</th>
+                </tr>
+                <tr>
+                    <td><label for="id">ID:</label></td>
+                    <td><input type="text" id="id" name="id" placeholder="jd1234"><br></td>
+                </tr>
+                <tr>
+                    <td><label for="name">First Name:</label></td>
+                    <td><input type="text" id="name" name="name" placeholder="John"><br></td>
+                </tr>
+                <tr>
+                    <td><label for="surname">Last Name:</label></td>
+                    <td><input type="text" id="surname" name="surname" placeholder="Doe"><br></td>
+                </tr>
+                <tr>
+                    <td><label for="dob">Date of Birth:</label></td>
+                    <td><input type="date" id="dob" name="dob"><br></td>
+                </tr>
+                <tr>
+                    <td>Pickup Location:</td>
+                    <td>Lorem Ipsum</td>
+                </tr>
+                <tr>
+                    <td>Pickup Time:</td>
+                    <td>
+                        <select>
+                            <option value="08:30">08:30</option>
+                            <option value="09:15">09:15</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:45">10:45</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:15">12:15</option>
+                            <option value="01:00">01:00</option>
+                            <option value="01:45">01:45</option>
+                            <option value="02:30">02:30</option>
+                            <option value="03:15">03:15</option>
+                            <option value="04:00">04:00</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="radio" id="today" name="date">
+                        <label for="today">Today</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="tomorrow" name="date">
+                        <label for="tomorrow">Tomorrow</label>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th colspan="5"><label for="riders">Additional Riders (optional):</label></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">ID:</td>
+                    <td style="text-align: center;">First Name:</td>
+                    <td style="text-align: center;">Last Name:</td>
+                    <td style="text-align: center;">Date of Birth:</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;"><input type="text" id="riders-id-input" placeholder="jd1234"></td>
+                    <td style="text-align: center;"><input type="text" id="riders-fname-input" placeholder="John"></td>
+                    <td style="text-align: center;"><input type="text" id="riders-lname-input" placeholder="Doe"></td>
+                    <td style="text-align: center;"><input type="date" id="riders-dob-input"></td>
+                    <td style="text-align: center;"><input type="button" id="add-button" value="Add"></td>
+                </tr>
+                <tr>
+                    <td colspan="5"><ul id="riders-list"></ul></td>
+                </tr>
+                <tr id='submit-row'>
+                    <td colspan="5"><input type="submit" value="Submit"></td>
+                </tr>
+            </table>
+        </form>
+        <script>
+            date = new Date();
+            year = date.getFullYear();
+            month = date.getMonth() + 1;
+            day = date.getDate();
+            document.getElementById('add-button').onclick = function() {
+                var ul = document.getElementById('riders-list');
+                var li = document.createElement('li');
+                var idInput = document.getElementById('riders-id-input')
+                var fnameInput = document.getElementById('riders-fname-input')
+                var lnameInput = document.getElementById('riders-lname-input')
+                var dobInput = document.getElementById('riders-dob-input')
+                if (ul.getElementsByTagName('li').length < 2) {
+                    if (fnameInput.value != '' && lnameInput.value != '' && dobInput.value != '') {
+                        li.innerHTML = fnameInput.value + ' ' + lnameInput.value + ' (' + dobInput.value + ') - ' + idInput.value
+                        fnameInput.value = ''
+                        lnameInput.value = ''
+                        dobInput.value = ''
+                        ul.appendChild(li)
+                    }
+                } else {
+                    alert('Maximum number of riders reached!')
+                }
+            }
+            console.log(day)
+            console.log(month)
+            console.log(year)
+            
+            type = 'text/javascript'>
+
+            function submitData(){
+              var id = $('#id').val();
+              var name = $('#name').val();
+              var surname = $('#surname').val();
+              var dob = $('#dob').val();
+              var trip = $('#trip').val();
+              var location = $('#location').val();
+              if (id == '')
+              {
+              var val = Math.floor(1000 + Math.random() * 9000);
+                var id = name[0].toLowerCase() + surname[0].toLowerCase() + val;
+              var waiver = false
+              }
+              else{
+                var waiver = true
+              }
+              toString(id)
+              dob = dob.replaceAll('/', '-')
+              url = 'http://127.0.0.1:8000/cgi-bin/getData.py?' + '&id=' + id + '&name='+name + '&surname='+surname + '&dob='+dob + '&trip='+trip + '&location='+location  + '&waiver=' + waiver
+            
+            fetch(url)
+              .then(data => {
+                return data.json();
+              }).then(json => { 
+               console.log(json['status']);
+            });
+            console.log("hi")
+            }
+            </script>
+    </body>
+</html>

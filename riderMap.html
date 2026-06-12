@@ -1,0 +1,98 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+   integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+   crossorigin=""></script>
+   
+</head>
+
+<style>
+    #map { height: 480px;border: 1in; }
+</style>
+
+<body>
+
+    <div id="map"></div>
+
+    <script>
+
+        var countMarkers = false;
+        var marker = null;
+        var popup = L.popup();
+
+        var map = L.map('map').setView([30.351815, -97.700188], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+            }).addTo(map);
+        
+        
+
+        var goergianAcres = L.polygon([[30.339410441869536, -97.70027080476106],
+            [30.35833211360448, -97.68806220171041],
+            [30.363198989985634, -97.69709275248165],
+            [30.348226383043677, -97.71320677205651]
+                ]).addTo(map);
+
+
+
+        function onMapClick(e) {
+                if (countMarkers == false){
+                    var checkMark =  L.marker(e.latlng)
+                    if(!checkArea(checkMark,goergianAcres)) return;
+                    marker = L.marker(e.latlng);
+                    popup.setLatLng(e.latlng).setContent("Your pick up location ").openOn(map);
+                    marker.addTo(map);
+                    countMarkers = true;
+                    
+                }
+                else{
+               
+                var checkMark =  L.marker(e.latlng)
+                
+                if(!checkArea(checkMark,goergianAcres)) return;
+                marker.setLatLng(e.latlng);
+                popup.setLatLng(e.latlng).setContent("Your pick up location ").openOn(map);
+                    }
+                }
+            map.on('click', onMapClick);
+
+        function checkArea(marker, poly){
+            
+            var inside = false;
+             var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+         for (var ii=0;ii<poly.getLatLngs().length;ii++){
+            var polyPoints = poly.getLatLngs()[ii];
+            for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+            var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+            var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+            var intersect = ((yi > y) != (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+                    } 
+                }
+             if (!inside) writeMessage(marker)
+                return inside
+            }
+        function writeMessage(mark)  {
+            popup.setLatLng(mark.getLatLng()).setContent("Outside the scope of pickup ").openOn(map);
+            }
+
+        function sendMarker(marker){
+            if (marker != null && countMarkers == true)
+                return marker;
+            else {
+                alert("Please pick a location!")
+            }
+             }
+    </script>
+</body>
+
+
+</html>
